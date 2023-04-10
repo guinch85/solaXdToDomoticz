@@ -421,6 +421,11 @@ Solax_ErrorQuery_t solax_ReceiveQuery(const Solax_StateQuery_t stateQuery, Solax
     
     uint32_t value;
     Solax_ErrorQuery_t error;
+    
+    // Create Domoticz API request (idx=xxx : data index in your Domoticz)
+    char cmdTemp[] = "curl 'http://192.168.85.6:8080/json.htm?type=command&param=udevice&idx=1574&svalue=";
+    char cmdPower[] = "curl 'http://192.168.85.6:8080/json.htm?type=command&param=udevice&idx=1575&svalue=";
+    char cmdEnergy[] = "curl 'http://192.168.85.6:8080/json.htm?type=command&param=udevice&idx=1580&svalue=";   
         
     error = solax_RS485_Receive(&rxMessage);
     if (error == -1) return -1;
@@ -491,9 +496,16 @@ Solax_ErrorQuery_t solax_ReceiveQuery(const Solax_StateQuery_t stateQuery, Solax
             }
             else
             {
-                value = (rxMessage.Data[0] << 8) | rxMessage.Data[1]; // Temperature [°C]
+                value = (rxMessage.Data[0] << 8) | rxMessage.Data[1]; // Temperature [Â°C]
                 liveData->Temperature = value;
                 DEBUG_MESSAGE("Solax: LiveData.Temperature: %.0f C", liveData->Temperature);
+                // Add value to Domoticz API Request and call by system)
+                char sTemp[]="0";
+                sprintf(sTemp, "%u", value);
+                strcat(cmdTemp, sTemp);
+                strcat(cmdTemp, "'");
+                INFO_MESSAGE("Temp cmd : %s", cmdTemp);
+                system(cmdTemp);
                 
                 value = (rxMessage.Data[2] << 8) | rxMessage.Data[3]; // Energy Today [kWh]
                 liveData->Energy_Today = value * 0.1f;
@@ -530,12 +542,26 @@ Solax_ErrorQuery_t solax_ReceiveQuery(const Solax_StateQuery_t stateQuery, Solax
                 value = (rxMessage.Data[18] << 8) | rxMessage.Data[19]; // AC Power [W]
                 liveData->Power = value;
                 DEBUG_MESSAGE("Solax: LiveData.Power: %.0f W", liveData->Power);
+                // Add value to Domoticz API Request and call by system)
+                char sPower[]="0";
+                sprintf(sPower, "%u", value);
+                strcat(cmdPower, sPower);
+                strcat(cmdPower, "'");
+                INFO_MESSAGE("Power cmd : %s", cmdPower);
+                system(cmdPower);
                 
                 //value = (rxMessage.Data[20] << 8) | rxMessage.Data[21]; // Not Used
                 
                 value = (rxMessage.Data[22] << 24) | (rxMessage.Data[23] << 16) | (rxMessage.Data[24] << 8) | rxMessage.Data[25]; // Energy Total [kWh]
                 if (value) {liveData->Energy_Total = value * 0.1f;}
                 DEBUG_MESSAGE("Solax: LiveData.Energy_Total: %.1f kWh", liveData->Energy_Total);
+                // Add value to Domoticz API Request and call by system)
+                char sEnergy[]="0";
+                sprintf(sEnergy, "%u", value*100);
+                strcat(cmdEnergy, sEnergy);
+                strcat(cmdEnergy, "'");
+                INFO_MESSAGE("Power cmd : %s", cmdEnergy);
+                system(cmdEnergy);
                 
                 value = (rxMessage.Data[26] << 24) | (rxMessage.Data[27] << 16) | (rxMessage.Data[28] << 8) | rxMessage.Data[29]; // Work Time Total [hour]
                 if (value) {liveData->Runtime_Total = value;}
@@ -548,7 +574,7 @@ Solax_ErrorQuery_t solax_ReceiveQuery(const Solax_StateQuery_t stateQuery, Solax
                 //value = (rxMessage.Data[32] << 8) | rxMessage.Data[33]; // Grid voltage fault in 0.1V
                 //value = (rxMessage.Data[34] << 8) | rxMessage.Data[35]; // Gird frequency fault in 0.01Hz
                 //value = (rxMessage.Data[36] << 8) | rxMessage.Data[37]; // DC injection fault in 1mA
-                //value = (rxMessage.Data[38] << 8) | rxMessage.Data[39]; // Temperature fault in °C
+                //value = (rxMessage.Data[38] << 8) | rxMessage.Data[39]; // Temperature fault in Â°C
                 //value = (rxMessage.Data[40] << 8) | rxMessage.Data[41]; // Pv1 voltage fault in 0.1V
                 //value = (rxMessage.Data[42] << 8) | rxMessage.Data[43]; // Pv2 voltage fault in 0.1V
                 //value = (rxMessage.Data[44] << 8) | rxMessage.Data[45]; // GFC fault
