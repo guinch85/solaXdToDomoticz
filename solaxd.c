@@ -583,7 +583,9 @@ Solax_ErrorQuery_t solax_ReceiveQuery(const Solax_StateQuery_t stateQuery, Solax
                 value = (rxMessage.Data[49] << 24) | (rxMessage.Data[48] << 16) | (rxMessage.Data[47] << 8) | rxMessage.Data[46]; // Error Code
                 liveData->ErrorBits = (uint32_t)value;
                 DEBUG_MESSAGE("Solax: LiveData.ErrorBits: 0x%08X", liveData->ErrorBits);
-                strcat(cmdError, liveData->ErrorBits);
+                char sError[]="0";
+                sprintf(sError, "%u", value);
+                strcat(cmdError, sError);
                 strcat(cmdError, "'");
                 INFO_MESSAGE("Error cmd : %s", cmdError);
                 system(cmdError);                
