@@ -425,7 +425,8 @@ Solax_ErrorQuery_t solax_ReceiveQuery(const Solax_StateQuery_t stateQuery, Solax
     // Create Domoticz API request (idx=xxx : data index in your Domoticz)
     char cmdTemp[] = "curl 'http://192.168.85.6:8080/json.htm?type=command&param=udevice&idx=1574&svalue=";
     char cmdPower[] = "curl 'http://192.168.85.6:8080/json.htm?type=command&param=udevice&idx=1575&svalue=";
-    char cmdEnergy[] = "curl 'http://192.168.85.6:8080/json.htm?type=command&param=udevice&idx=1580&svalue=";   
+    char cmdEnergy[] = "curl 'http://192.168.85.6:8080/json.htm?type=command&param=udevice&idx=1580&svalue=";
+    char cmdError[] = "curl 'http://192.168.85.6:8080/json.htm?type=command&param=udevice&idx=1595&nvalue=0&svalue=";
         
     error = solax_RS485_Receive(&rxMessage);
     if (error == -1) return -1;
@@ -582,6 +583,10 @@ Solax_ErrorQuery_t solax_ReceiveQuery(const Solax_StateQuery_t stateQuery, Solax
                 value = (rxMessage.Data[49] << 24) | (rxMessage.Data[48] << 16) | (rxMessage.Data[47] << 8) | rxMessage.Data[46]; // Error Code
                 liveData->ErrorBits = (uint32_t)value;
                 DEBUG_MESSAGE("Solax: LiveData.ErrorBits: 0x%08X", liveData->ErrorBits);
+                strcat(cmdError, liveData->ErrorBits);
+                strcat(cmdError, "'");
+                INFO_MESSAGE("Error cmd : %s", cmdError);
+                system(cmdError);                
                 
                 liveData->valid = true;
             }
