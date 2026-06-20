@@ -423,10 +423,10 @@ Solax_ErrorQuery_t solax_ReceiveQuery(const Solax_StateQuery_t stateQuery, Solax
     Solax_ErrorQuery_t error;
     
     // Create Domoticz API request (idx=xxx : data index in your Domoticz)
-    char cmdTemp[] = "curl 'http://192.168.85.6:8080/json.htm?type=command&param=udevice&idx=1574&svalue=";
-    char cmdPower[] = "curl 'http://192.168.85.6:8080/json.htm?type=command&param=udevice&idx=1575&svalue=";
-    char cmdEnergy[] = "curl 'http://192.168.85.6:8080/json.htm?type=command&param=udevice&idx=1580&svalue=";
-    char cmdError[] = "curl 'http://192.168.85.6:8080/json.htm?type=command&param=udevice&idx=1595&nvalue=0&svalue=";
+    char cmdTemp[] = "curl 'http://192.168.85.8:8080/json.htm?type=command&param=udevice&idx=1574&svalue=";
+    char cmdPower[] = "curl 'http://192.168.85.8:8080/json.htm?type=command&param=udevice&idx=1575&svalue=";
+    char cmdEnergy[] = "curl 'http://192.168.85.8:8080/json.htm?type=command&param=udevice&idx=1580&svalue=";
+    char cmdError[] = "curl 'http://192.168.85.8:8080/json.htm?type=command&param=udevice&idx=1595&nvalue=0&svalue=";
         
     error = solax_RS485_Receive(&rxMessage);
     if (error == -1) return -1;
